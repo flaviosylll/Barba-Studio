@@ -4,106 +4,85 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Barba Studio - Painel Administrativo</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #121212; color: #e0e0e0; padding: 20px; }
-    header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    h1 { color: #f39c12; font-size: 1.3rem; letter-spacing: 0.5px; }
-    .btn-voltar { background: transparent; border: 1px solid #777; color: #ccc; padding: 8px 15px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 0.85rem; }
-    .btn-voltar:hover { background: #333; color: #fff; }
-
-    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; }
-    .stat-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 8px; text-align: center; }
-    .stat-card h3 { font-size: 0.75rem; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
-    .stat-card span { font-size: 1.8rem; font-weight: bold; color: #f39c12; }
-
-    .main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-    @media(max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
-
-    .panel { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 8px; }
-    .panel h2 { color: #f39c12; font-size: 1.05rem; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 8px; }
-
-    .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; font-size: 0.8rem; color: #aaa; margin-bottom: 5px; }
-    .form-group input { width: 100%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
-    
-    .btn-success { width: 100%; padding: 11px; background: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-    .btn-success:hover { background: #219653; }
-    .btn-info { width: 100%; padding: 11px; background: #2980b9; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
-    .btn-info:hover { background: #2471a3; }
-    .btn-danger { width: 100%; padding: 11px; background: #c0392b; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-    .btn-danger:hover { background: #962d22; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
-    th { color: #f39c12; }
-    
-    .barbeiros-list { max-height: 150px; overflow-y: auto; margin-bottom: 15px; border: 1px solid #333; border-radius: 5px; background: #222; }
-    .barbeiro-item { padding: 10px 12px; border-bottom: 1px solid #333; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: #ddd; }
-    .barbeiro-item:hover { background: #333; }
-    .barbeiro-item.selected { background: #f39c12; color: #121212; font-weight: bold; }
-  </style>
 </head>
 <body>
 
-  <header>
-    <h1>BARBA STUDIO • PAINEL ADMINISTRATIVO</h1>
-    <a href="index.html" class="btn-voltar">← Voltar ao Site</a>
-  </header>
-
-  <div class="stats-container">
-    <div class="stat-card">
-      <h3>Total Agendamentos</h3>
-      <span id="stat-total">0</span>
-    </div>
-    <div class="stat-card">
-      <h3>Agendamentos Hoje</h3>
-      <span id="stat-hoje">0</span>
-    </div>
-    <div class="stat-card">
-      <h3>Barbeiros Ativos</h3>
-      <span id="stat-barbeiros">0</span>
-    </div>
+  <!-- TELA DE SENHA ADMIN -->
+  <div id="card-senha-admin" class="card" style="margin: 80px auto; max-width: 400px; text-align: center;">
+    <h2 style="color:#f39c12; font-size:1.4rem;">ACESSO RESTRITO</h2>
+    <p style="color:#aaa; font-size:0.85rem; margin-bottom:20px;">Insira a senha para aceder ao painel administrativo.</p>
+    <form onsubmit="verificarSenhaAdmin(event)">
+      <div class="form-group">
+        <input type="password" id="senha-admin-input" placeholder="****" style="text-align:center;" required>
+      </div>
+      <button type="submit" class="btn-primary" style="background:#f39c12; color:#121212;">Entrar</button>
+    </form>
+    <a href="index.html" class="link-voltar" style="margin-top:15px; display:block;">← Voltar</a>
   </div>
 
-  <div class="main-grid">
-    <!-- GESTÃO DE BARBEIROS -->
-    <div class="panel">
-      <h2>✂️ Gestão de Barbeiros</h2>
-      <div class="form-group">
-        <label>Barbeiros cadastrados (clique para selecionar):</label>
-        <div id="lista-barbeiros-admin" class="barbeiros-list">
-          <!-- Preenchido via JavaScript -->
-        </div>
+  <!-- PAINEL ADMINISTRATIVO REAL -->
+  <div id="conteudo-admin" class="hidden" style="width: 100%; max-width: 1100px; margin: 0 auto;">
+    <header style="width:100%; max-width:100%;">
+      <h1>BARBA STUDIO <span style="font-size:0.8rem; color:#aaa;">- PAINEL ADMINISTRATIVO</span></h1>
+      <a href="index.html" class="btn-admin">← Voltar</a>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+      <div class="card" style="max-width:100%; margin:0; text-align:center; padding:15px;">
+        <span style="font-size:0.75rem; color:#aaa; text-transform:uppercase;">TOTAL GERAL</span>
+        <h2 id="stat-total" style="font-size:2rem; margin-top:5px;">0</h2>
       </div>
-      <div class="form-group">
-        <input type="text" id="novo-barbeiro-nome" placeholder="Nome do novo barbeiro">
+      <div class="card" style="max-width:100%; margin:0; text-align:center; padding:15px;">
+        <span style="font-size:0.75rem; color:#aaa; text-transform:uppercase;">HOJE</span>
+        <h2 id="stat-hoje" style="font-size:2rem; margin-top:5px;">0</h2>
       </div>
-      <button class="btn-success" onclick="cadastrarBarbeiroAdmin()">+ Cadastrar Novo Barbeiro</button>
-      <button class="btn-info" onclick="listarClientesAdmin()">👥 Todos Clientes Cadastrados</button>
-      <button class="btn-danger" onclick="excluirBarbeiroSelecionado()">🗑️ Excluir Barbeiro Selecionado</button>
+      <div class="card" style="max-width:100%; margin:0; text-align:center; padding:15px;">
+        <span style="font-size:0.75rem; color:#aaa; text-transform:uppercase;">BARBEIROS</span>
+        <h2 id="stat-barbeiros" style="font-size:2rem; margin-top:5px;">0</h2>
+      </div>
     </div>
 
-    <!-- TODOS OS AGENDAMENTOS -->
-    <div class="panel">
-      <h2>📅 Todos os Agendamentos</h2>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Barbeiro</th>
-              <th>Cliente</th>
-              <th>Data</th>
-              <th>Hora</th>
-              <th>Ação</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-agendamentos">
-            <tr><td colspan="6" style="text-align: center; color: #777;">A carregar agendamentos...</td></tr>
-          </tbody>
-        </table>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 20px;">
+      <!-- GESTÃO DE BARBEIROS -->
+      <div class="card" style="max-width:100%; margin:0;">
+        <h2>✂️ GESTÃO DE BARBEIROS</h2>
+        <div class="form-group" style="margin-top:15px;">
+          <label>Barbeiros cadastrados:</label>
+          <div id="lista-barbeiros-admin" style="max-height: 150px; overflow-y: auto; background:#111; border:1px solid #333; border-radius:5px; margin-top:5px;">
+            <!-- Barbeiros via JS -->
+          </div>
+        </div>
+        <div class="form-group">
+          <input type="text" id="novo-barbeiro-nome" placeholder="Nome do novo barbeiro">
+        </div>
+        <button class="btn-primary" style="background:#1e8449; margin-bottom:10px;" onclick="cadastrarBarbeiroAdmin()">+ Cadastrar Novo Barbeiro</button>
+        <button class="btn-primary" style="background:#117864; margin-bottom:10px;" onclick="listarClientesAdmin()">Todos Clientes Cadastrados</button>
+        <button class="btn-primary" style="background:#c0392b;" onclick="excluirBarbeiroSelecionado()">Excluir Barbeiro Selecionado</button>
+      </div>
+
+      <!-- TODOS OS AGENDAMENTOS -->
+      <div class="card" style="max-width:100%; margin:0;">
+        <h2>📅 TODOS OS AGENDAMENTOS</h2>
+        <div style="overflow-x: auto; margin-top:15px;">
+          <table style="width:100%; border-collapse:collapse; font-size:0.85rem;">
+            <thead>
+              <tr style="border-bottom:1px solid #333; text-align:left;">
+                <th style="padding:8px; color:#f39c12;">ID</th>
+                <th style="padding:8px; color:#f39c12;">Barbeiro</th>
+                <th style="padding:8px; color:#f39c12;">Cliente</th>
+                <th style="padding:8px; color:#f39c12;">Data</th>
+                <th style="padding:8px; color:#f39c12;">Hora</th>
+                <th style="padding:8px; color:#f39c12;">Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tabela-agendamentos">
+              <tr><td colspan="6" style="padding:15px; text-align:center; color:#777;">Nenhum agendamento encontrado.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-primary" style="background:#f39c12; color:#121212; margin-top:20px;" onclick="window.print()">🖨️ Baixar Relatório (PDF)</button>
       </div>
     </div>
   </div>
@@ -115,9 +94,17 @@
 
     let barbeiroSelecionadoId = null;
 
-    document.addEventListener("DOMContentLoaded", () => {
-      carregarDadosAdmin();
-    });
+    function verificarSenhaAdmin(event) {
+      event.preventDefault();
+      const senha = document.getElementById("senha-admin-input").value.trim();
+      if (senha === "1234" || senha === "admin") {
+        document.getElementById("card-senha-admin").classList.add("hidden");
+        document.getElementById("conteudo-admin").classList.remove("hidden");
+        carregarDadosAdmin();
+      } else {
+        alert("Senha incorreta.");
+      }
+    }
 
     async function carregarDadosAdmin() {
       await carregarBarbeirosAdmin();
@@ -129,26 +116,26 @@
       const { data, error } = await _supabase.from("profissionais").select("*").order("id", { ascending: true });
       
       if (error || !data) {
-        container.innerHTML = '<div class="barbeiro-item">Erro ao carregar</div>';
+        container.innerHTML = '<div style="padding:8px; color:#aaa;">Erro ao carregar</div>';
         document.getElementById("stat-barbeiros").innerText = "0";
         return;
       }
 
       document.getElementById("stat-barbeiros").innerText = data.length;
       if (data.length === 0) {
-        container.innerHTML = '<div class="barbeiro-item">Nenhum barbeiro registado.</div>';
+        container.innerHTML = '<div style="padding:8px; color:#aaa;">Nenhum barbeiro registado.</div>';
         return;
       }
 
       container.innerHTML = "";
       data.forEach(b => {
         const div = document.createElement("div");
-        div.className = `barbeiro-item ${barbeiroSelecionadoId === b.id ? 'selected' : ''}`;
+        div.style.cssText = "padding:8px 12px; border-bottom:1px solid #222; cursor:pointer;";
+        if (barbeiroSelecionadoId === b.id) div.style.background = "#f39c12", div.style.color = "#121212";
         div.innerText = b.nome;
         div.onclick = () => {
-          document.querySelectorAll('.barbeiro-item').forEach(el => el.classList.remove('selected'));
-          div.classList.add('selected');
           barbeiroSelecionadoId = b.id;
+          carregarBarbeirosAdmin();
         };
         container.appendChild(div);
       });
@@ -157,15 +144,11 @@
     async function cadastrarBarbeiroAdmin() {
       const nomeInput = document.getElementById("novo-barbeiro-nome");
       const nome = nomeInput.value.trim();
-      if (!nome) {
-        alert("Introduza o nome do barbeiro.");
-        return;
-      }
+      if (!nome) return alert("Introduza o nome do barbeiro.");
 
       const { error } = await _supabase.from("profissionais").insert([{ nome }]);
-      if (error) {
-        alert("Erro ao cadastrar barbeiro: " + error.message);
-      } else {
+      if (error) alert("Erro ao cadastrar barbeiro.");
+      else {
         alert("Barbeiro cadastrado com sucesso!");
         nomeInput.value = "";
         carregarBarbeirosAdmin();
@@ -173,16 +156,12 @@
     }
 
     async function excluirBarbeiroSelecionado() {
-      if (!barbeiroSelecionadoId) {
-        alert("Selecione um barbeiro na lista acima para excluir.");
-        return;
-      }
+      if (!barbeiroSelecionadoId) return alert("Selecione um barbeiro na lista acima.");
       if (!confirm("Tem certeza que deseja excluir este barbeiro?")) return;
 
       const { error } = await _supabase.from("profissionais").delete().eq("id", barbeiroSelecionadoId);
-      if (error) {
-        alert("Erro ao excluir: " + error.message);
-      } else {
+      if (error) alert("Erro ao excluir.");
+      else {
         alert("Barbeiro excluído com sucesso!");
         barbeiroSelecionadoId = null;
         carregarBarbeirosAdmin();
@@ -191,25 +170,20 @@
 
     async function carregarAgendamentosAdmin() {
       const tbody = document.getElementById("tabela-agendamentos");
-      
-      const { data, error } = await _supabase
-        .from("agendamentos")
-        .select(`id, cliente_nome, data_agendamento, hora_agendamento, profissional_id, profissionais(nome)`)
-        .order("data_agendamento", { ascending: true });
+      const { data, error } = await _supabase.from("agendamentos").select(`id, cliente_nome, data_agendamento, hora_agendamento, profissional_id, profissionais(nome)`).order("data_agendamento", { ascending: true });
 
       if (error || !data) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #c0392b;">Erro ao carregar agendamentos.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#c0392b;">Erro ao carregar agendamentos.</td></tr>`;
         return;
       }
 
       document.getElementById("stat-total").innerText = data.length;
-      
       const hojeStr = new Date().toISOString().split('T')[0];
       const agendamentosHoje = data.filter(a => a.data_agendamento === hojeStr);
       document.getElementById("stat-hoje").innerText = agendamentosHoje.length;
 
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #777;">Nenhum agendamento encontrado.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" style="padding:15px; text-align:center; color:#777;">Nenhum agendamento encontrado.</td></tr>`;
         return;
       }
 
@@ -217,42 +191,30 @@
       data.forEach(a => {
         const nomeBarbeiro = a.profissionais ? a.profissionais.nome : "Desconhecido";
         tbody.innerHTML += `
-          <tr>
-            <td>${a.id}</td>
-            <td>${nomeBarbeiro}</td>
-            <td>${a.cliente_nome}</td>
-            <td>${a.data_agendamento}</td>
-            <td>${a.hora_agendamento}</td>
-            <td><button onclick="excluirAgendamento(${a.id})" style="background:#c0392b;color:#fff;border:none;padding:5px 8px;border-radius:4px;cursor:pointer;">Excluir</button></td>
+          <tr style="border-bottom:1px solid #222;">
+            <td style="padding:8px;">#${a.id}</td>
+            <td style="padding:8px;">${nomeBarbeiro}</td>
+            <td style="padding:8px;">${a.cliente_nome}</td>
+            <td style="padding:8px;">${a.data_agendamento}</td>
+            <td style="padding:8px;">${a.hora_agendamento}</td>
+            <td style="padding:8px;"><button onclick="excluirAgendamento(${a.id})" style="background:#c0392b; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Cancelar</button></td>
           </tr>
         `;
       });
     }
 
     async function excluirAgendamento(id) {
-      if (!confirm("Deseja cancelar/excluir este agendamento?")) return;
+      if (!confirm("Deseja cancelar este agendamento?")) return;
       const { error } = await _supabase.from("agendamentos").delete().eq("id", id);
-      if (error) {
-        alert("Erro ao excluir agendamento.");
-      } else {
-        carregarAgendamentosAdmin();
-      }
+      if (error) alert("Erro ao cancelar.");
+      else carregarAgendamentosAdmin();
     }
 
     async function listarClientesAdmin() {
       const { data, error } = await _supabase.from("clientes").select("nome, telefone, email");
-      if (error || !data) {
-        alert("Erro ao buscar clientes.");
-        return;
-      }
-      if (data.length === 0) {
-        alert("Nenhum cliente cadastrado ainda.");
-        return;
-      }
+      if (error || !data || data.length === 0) return alert("Nenhum cliente cadastrado.");
       let lista = "CLIENTES CADASTRADOS:\n\n";
-      data.forEach(c => {
-        lista += `Nome: ${c.nome} | Tel: ${c.telefone} | Email: ${c.email || 'Não informado'}\n`;
-      });
+      data.forEach(c => lista += `• ${c.nome} | Tel: ${c.telefone}\n`);
       alert(lista);
     }
   </script>
