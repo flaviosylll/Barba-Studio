@@ -57,8 +57,15 @@
         <div class="form-group">
           <input type="text" id="novo-barbeiro-nome" placeholder="Nome do novo barbeiro">
         </div>
+
         <button class="btn-primary" style="background:#1e8449; margin-bottom:10px;" onclick="cadastrarBarbeiroAdmin()">+ Cadastrar Novo Barbeiro</button>
-        <button class="btn-primary" style="background:#117864; margin-bottom:10px;" onclick="listarClientesAdmin()">Todos Clientes Cadastrados</button>
+
+        <!-- CARD CONTADOR DE CLIENTES CADASTRADOS (SUBSTITUIU O BOTÃO) -->
+        <div class="card" style="max-width:100%; margin: 10px 0; text-align:center; padding:12px; background:#111; border:1px solid #333;">
+          <span style="font-size:0.75rem; color:#aaa; text-transform:uppercase;">CLIENTES CADASTRADOS</span>
+          <h2 id="stat-clientes" style="font-size:1.8rem; margin-top:4px; color:#f39c12;">0</h2>
+        </div>
+
         <button class="btn-primary" style="background:#c0392b;" onclick="excluirBarbeiroSelecionado()">Excluir Barbeiro Selecionado</button>
       </div>
 
@@ -109,6 +116,7 @@
     async function carregarDadosAdmin() {
       await carregarBarbeirosAdmin();
       await carregarAgendamentosAdmin();
+      await carregarClientesAdmin();
     }
 
     async function carregarBarbeirosAdmin() {
@@ -210,12 +218,13 @@
       else carregarAgendamentosAdmin();
     }
 
-    async function listarClientesAdmin() {
-      const { data, error } = await _supabase.from("clientes").select("nome, telefone, email");
-      if (error || !data || data.length === 0) return alert("Nenhum cliente cadastrado.");
-      let lista = "CLIENTES CADASTRADOS:\n\n";
-      data.forEach(c => lista += `• ${c.nome} | Tel: ${c.telefone}\n`);
-      alert(lista);
+    async function carregarClientesAdmin() {
+      const { data, error } = await _supabase.from("clientes").select("*");
+      const totalClientes = error || !data ? 0 : data.length;
+      const elStat = document.getElementById("stat-clientes");
+      if (elStat) {
+        elStat.innerText = totalClientes;
+      }
     }
   </script>
 </body>
